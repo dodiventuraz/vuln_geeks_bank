@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:'Manrope',system-ui,sans-serif; -webkit-font-smoothing:antialiased; color:#0d1a36; background:#eef1f8; }
+  ::placeholder{ color:#9aa4ba; }
+  input,button,select{ font-family:inherit; }
+  button{ cursor:pointer; }
+  @keyframes gbFade{ from{ transform:translateY(9px); } to{ transform:none; } }
+  @keyframes gbPop{ 0%{ transform:scale(.6); opacity:0; } 60%{ transform:scale(1.08); } 100%{ transform:scale(1); opacity:1; } }
+
+  [data-nav]{ background:transparent; }
+  [data-nav][data-on="1"]{ background:#ffffff !important; color:#14308f !important; box-shadow:0 6px 18px rgba(20,48,143,.12) !important; }
+  [data-nav][data-on="1"] [data-ico]{ color:#2554f6 !important; }
+  [data-nav][data-on="0"]:hover{ background:rgba(255,255,255,.08) !important; color:#dbe4f7 !important; }
+  [data-chip][data-on="1"]{ background:#14308f !important; color:#fff !important; border-color:#14308f !important; }
+  [data-chip][data-on="0"]:hover{ border-color:#14308f !important; color:#14308f !important; }
+  [data-tg][data-on="1"]{ background:#2554f6 !important; }
+  [data-tg][data-on="1"] [data-knob]{ transform:translateX(18px) !important; }
+  [data-row]:hover{ background:#f6f8fd; }
+  [data-pick][data-on="1"]{ border-color:#2554f6 !important; background:#f5f8ff !important; }
+  [data-amt]{ background:#fff; }
+  [data-amt][data-on="1"]{ border-color:#2554f6 !important; background:#eef3ff !important; color:#2554f6 !important; }
+  @keyframes gbModalIn{ from{ transform:translateY(16px) scale(.98); } to{ transform:none; } }
+  @media (max-width:880px){
+    [data-shell]{ flex-direction:column; }
+    [data-sidebar]{ width:100% !important; flex-direction:row !important; align-items:center; overflow-x:auto; padding:10px 14px !important; gap:8px !important; }
+    [data-brandblock]{ display:none !important; }
+    [data-navlist]{ flex-direction:row !important; gap:8px !important; }
+    [data-nav]{ flex:0 0 auto; }
+    [data-navlabel]{ display:none; }
+    [data-logoutwrap]{ display:none !important; }
+    [data-main]{ padding:20px 16px !important; }
+    [data-authsplit]{ grid-template-columns:1fr !important; }
+    [data-authbrand]{ display:none !important; }
+  }
+  @media (max-width:680px){
+    [data-cols2],[data-cols3]{ grid-template-columns:1fr !important; }
+  }
+</style>
+</helmet>
+
+<sc-if value="{{ authed }}" hint-placeholder-val="{{ true }}">
+<div data-shell style="display:flex; min-height:760px; height:100%; background:#eef1f8;">
+
+  <aside data-sidebar style="width:248px; flex:0 0 248px; background:linear-gradient(180deg,#0d1a36,#11214a); padding:24px 16px; display:flex; flex-direction:column;">
+    <div data-brandblock style="display:flex; align-items:center; gap:11px; padding:6px 8px 22px;">
+      <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,#2554f6,#5b8bff); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(37,84,246,.45);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 10 12 4l8 6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M5 10v8h14v-8M9 18v-5h6v5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div style="color:#fff; font-weight:800; font-size:17px; letter-spacing:-.3px;">Geeks Bank</div>
+        <div style="color:#7e8db5; font-size:11px; font-weight:600; letter-spacing:.4px;">DIGITAL BANKING</div>
+      </div>
+    </div>
+
+    <nav data-navlist style="display:flex; flex-direction:column; gap:6px; flex:1;">
+      <button data-nav data-on="{{ onDash }}" onClick="{{ goDash }}" style="display:flex; align-items:center; gap:12px; border:none; color:#eef2fb; font-size:14.5px; font-weight:600; padding:12px 13px; border-radius:12px; text-align:left; transition:.18s;">
+        <span data-ico style="display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <span data-navlabel>Dashboard</span>
+      </button>
+      <button data-nav data-on="{{ onTransfer }}" onClick="{{ goTransfer }}" style="display:flex; align-items:center; gap:12px; border:none; color:#eef2fb; font-size:14.5px; font-weight:600; padding:12px 13px; border-radius:12px; text-align:left; transition:.18s;">
+        <span data-ico style="display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M7 7h12l-3-3M17 17H5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span data-navlabel>Transfer</span>
+      </button>
+      <button data-nav data-on="{{ onHistory }}" onClick="{{ goHistory }}" style="display:flex; align-items:center; gap:12px; border:none; color:#eef2fb; font-size:14.5px; font-weight:600; padding:12px 13px; border-radius:12px; text-align:left; transition:.18s;">
+        <span data-ico style="display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span data-navlabel>Transactions</span>
+      </button>
+      <button data-nav data-on="{{ onProfile }}" onClick="{{ goProfile }}" style="display:flex; align-items:center; gap:12px; border:none; color:#eef2fb; font-size:14.5px; font-weight:600; padding:12px 13px; border-radius:12px; text-align:left; transition:.18s;">
+        <span data-ico style="display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 19c.7-3.3 3.3-5 6.5-5s5.8 1.7 6.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span data-navlabel>Profile</span>
+      </button>
+      <button data-nav data-on="{{ onAdmin }}" onClick="{{ goAdmin }}" style="display:flex; align-items:center; gap:12px; border:none; color:#eef2fb; font-size:14.5px; font-weight:600; padding:12px 13px; border-radius:12px; text-align:left; transition:.18s;">
+        <span data-ico style="display:flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+        <span data-navlabel>Admin</span>
+      </button>
+    </nav>
+
+    <div data-logoutwrap style="margin-top:14px; padding-top:16px; border-top:1px solid rgba(255,255,255,.08);">
+      <button onClick="{{ logout }}" style="display:flex; align-items:center; gap:12px; border:none; background:transparent; color:#8b97bd; font-size:14px; font-weight:600; padding:11px 13px; border-radius:12px; width:100%; text-align:left;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2M16 12h6m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <main data-main style="flex:1; min-width:0; padding:26px 34px; overflow:auto;">
+    <header style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px;">
+      <div>
+        <h1 style="margin:0; font-size:23px; font-weight:800; letter-spacing:-.5px;">{{ pageTitle }}</h1>
+        <div style="color:#707b94; font-size:13px; font-weight:500; margin-top:3px;">{{ pageSub }}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:9px; background:#fff; border:1px solid #e4e9f3; border-radius:12px; padding:9px 13px; min-width:210px; color:#9aa4ba;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span style="font-size:13.5px;">Search</span>
+        </div>
+        <button style="position:relative; width:42px; height:42px; border-radius:12px; border:1px solid #e4e9f3; background:#fff; display:flex; align-items:center; justify-content:center; color:#46506a;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span style="position:absolute; top:9px; right:11px; width:7px; height:7px; border-radius:50%; background:#e0485f; border:1.5px solid #fff;"></span>
+        </button>
+        <div style="display:flex; align-items:center; gap:10px; padding:5px 6px 5px 5px; background:#fff; border:1px solid #e4e9f3; border-radius:13px;">
+          <div style="width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#2554f6,#5b8bff); color:#fff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center;">RP</div>
+          <div style="padding-right:6px;">
+            <div style="font-size:13px; font-weight:700; line-height:1.1;">Rangga P.</div>
+            <div style="font-size:11px; color:#9aa4ba; font-weight:600;">Personal</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div style="opacity:1;">
+
+      <!-- DASHBOARD -->
+      <sc-if value="{{ onDashB }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid; grid-template-columns:1.55fr 1fr; gap:22px;" data-cols2>
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div style="position:relative; overflow:hidden; border-radius:22px; padding:26px 28px; background:linear-gradient(125deg,#2554f6 0%,#1c40b8 55%,#14308f 100%); box-shadow:0 18px 40px -14px rgba(37,84,246,.55);">
+            <div style="position:absolute; top:-60px; right:-30px; width:220px; height:220px; border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);"></div>
+            <div style="position:relative; display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="color:#c5d4ff; font-size:13px; font-weight:600;">Total Balance · Main Savings</div>
+                <div style="font-family:'JetBrains Mono',monospace; color:#fff; font-size:36px; font-weight:700; letter-spacing:-1px; margin-top:8px;">{{ balanceStr }}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-style:italic; font-weight:800; color:#fff; font-size:16px; letter-spacing:.5px;">VISA</div>
+              </div>
+            </div>
+            <div style="position:relative; display:flex; justify-content:space-between; align-items:flex-end; margin-top:30px;">
+              <div style="font-family:'JetBrains Mono',monospace; color:#dbe5ff; font-size:16px; letter-spacing:3px;">5421 •••• •••• 4021</div>
+              <div style="display:flex; gap:18px;">
+                <div><div style="color:#9fb6ff; font-size:10px; font-weight:600;">IN · JUN</div><div style="color:#9be7c4; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;">+{{ incomeStr }}</div></div>
+                <div><div style="color:#9fb6ff; font-size:10px; font-weight:600;">OUT · JUN</div><div style="color:#ffc0c9; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;">−{{ spendStr }}</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;" data-cols3>
+            <button onClick="{{ goTransfer }}" style="display:flex; flex-direction:column; align-items:center; gap:9px; padding:16px 8px; border-radius:16px; border:1px solid #e6eaf3; background:#fff; transition:.18s;" style-hover="border-color:#2554f6; box-shadow:0 8px 20px -10px rgba(37,84,246,.4);">
+              <span style="width:42px; height:42px; border-radius:12px; background:#eef3ff; color:#2554f6; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 7h12l-3-3M17 17H5l3 3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span style="font-size:13px; font-weight:700; color:#0d1a36;">Transfer</span>
+            </button>
+            <button onClick="{{ openTopup }}" style="display:flex; flex-direction:column; align-items:center; gap:9px; padding:16px 8px; border-radius:16px; border:1px solid #e6eaf3; background:#fff; transition:.18s;" style-hover="border-color:#2554f6; box-shadow:0 8px 20px -10px rgba(37,84,246,.4);">
+              <span style="width:42px; height:42px; border-radius:12px; background:#e9f8f0; color:#1f9d6b; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+              <span style="font-size:13px; font-weight:700; color:#0d1a36;">Top Up</span>
+            </button>
+            <button onClick="{{ openPaybill }}" style="display:flex; flex-direction:column; align-items:center; gap:9px; padding:16px 8px; border-radius:16px; border:1px solid #e6eaf3; background:#fff; transition:.18s;" style-hover="border-color:#2554f6; box-shadow:0 8px 20px -10px rgba(37,84,246,.4);">
+              <span style="width:42px; height:42px; border-radius:12px; background:#fff1e8; color:#e07a2c; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.9"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.9"/></svg></span>
+              <span style="font-size:13px; font-weight:700; color:#0d1a36;">Pay Bill</span>
+            </button>
+            <button style="display:flex; flex-direction:column; align-items:center; gap:9px; padding:16px 8px; border-radius:16px; border:1px solid #e6eaf3; background:#fff; transition:.18s;" style-hover="border-color:#2554f6; box-shadow:0 8px 20px -10px rgba(37,84,246,.4);">
+              <span style="width:42px; height:42px; border-radius:12px; background:#f1eefe; color:#6b4ee0; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="18" cy="12" r="1.7" fill="currentColor"/></svg></span>
+              <span style="font-size:13px; font-weight:700; color:#0d1a36;">More</span>
+            </button>
+          </div>
+
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:20px 22px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <div style="font-size:15px; font-weight:800;">Recent Transactions</div>
+              <button onClick="{{ goHistory }}" style="background:transparent; border:none; color:#2554f6; font-size:13px; font-weight:700;">See all →</button>
+            </div>
+            <sc-for list="{{ recent }}" as="t" hint-placeholder-count="5">
+              <div data-row style="display:flex; align-items:center; gap:13px; padding:11px 6px; border-radius:12px; transition:.15s;">
+                <span style="width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:{{ t.bg }}; color:{{ t.fg }};">{{ t.initials }}</span>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:14px; font-weight:700; color:#0d1a36;">{{ t.name }}</div>
+                  <div style="font-size:12px; color:#8a93a8; font-weight:500;">{{ t.sub }}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600; color:{{ t.amtColor }};">{{ t.amtStr }}</div>
+                  <div style="font-size:11px; color:#aab2c5; font-weight:500;">{{ t.dateStr }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:20px 22px;">
+            <div style="font-size:15px; font-weight:800; margin-bottom:2px;">Cash Flow</div>
+            <div style="font-size:12px; color:#8a93a8; font-weight:600; margin-bottom:18px;">Last 7 months</div>
+            <div style="display:flex; align-items:flex-end; gap:10px; height:140px;">
+              <sc-for list="{{ bars }}" as="b" hint-placeholder-count="7">
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                  <div style="width:100%; display:flex; flex-direction:column; justify-content:flex-end; height:110px; gap:3px;">
+                    <div style="width:100%; border-radius:5px 5px 0 0; background:#dfe7fb; height:{{ b.out }};"></div>
+                    <div style="width:100%; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#2554f6,#5b8bff); height:{{ b.in }};"></div>
+                  </div>
+                  <div style="font-size:10.5px; color:#9aa4ba; font-weight:700;">{{ b.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex; gap:18px; margin-top:16px; padding-top:14px; border-top:1px solid #eef1f7;">
+              <div style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; border-radius:3px; background:#2554f6;"></span><span style="font-size:12px; color:#586079; font-weight:600;">Income</span></div>
+              <div style="display:flex; align-items:center; gap:7px;"><span style="width:10px; height:10px; border-radius:3px; background:#dfe7fb;"></span><span style="font-size:12px; color:#586079; font-weight:600;">Expense</span></div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:20px 22px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+              <div style="font-size:15px; font-weight:800;">My Cards</div>
+              <span style="font-size:12px; color:#2554f6; font-weight:700;">2 active</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; gap:13px; padding:13px; border:1px solid #eef1f7; border-radius:14px;">
+                <span style="width:46px; height:32px; border-radius:7px; background:linear-gradient(135deg,#0d1a36,#2a3c66);"></span>
+                <div style="flex:1;"><div style="font-size:13.5px; font-weight:700;">Main Savings</div><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8a93a8;">•••• 4021</div></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;">{{ balanceStr }}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:13px; padding:13px; border:1px solid #eef1f7; border-radius:14px;">
+                <span style="width:46px; height:32px; border-radius:7px; background:linear-gradient(135deg,#1f9d6b,#3fcf94);"></span>
+                <div style="flex:1;"><div style="font-size:13.5px; font-weight:700;">Payroll</div><div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8a93a8;">•••• 1188</div></div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;">Rp 12.400.000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- TRANSFER -->
+      <sc-if value="{{ onTransferB }}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:560px; margin:0 auto;">
+        <sc-if value="{{ tFormStep }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff; border:1px solid #e6eaf3; border-radius:22px; padding:28px 30px;">
+          <div style="font-size:18px; font-weight:800; margin-bottom:4px;">Send Money</div>
+          <div style="font-size:13px; color:#8a93a8; font-weight:500; margin-bottom:22px;">Transfer to any Geeks Bank or other bank account.</div>
+
+          <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">FROM ACCOUNT</div>
+          <div style="display:flex; align-items:center; gap:13px; padding:14px 16px; border:1.5px solid #2554f6; background:#f5f8ff; border-radius:14px; margin-bottom:22px;">
+            <span style="width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg,#0d1a36,#2a3c66);"></span>
+            <div style="flex:1;"><div style="font-size:14px; font-weight:700;">Main Savings · •••• 4021</div><div style="font-size:12px; color:#8a93a8; font-weight:600;">Available {{ balanceStr }}</div></div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2554f6" stroke-width="1.8"/><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#2554f6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">RECIPIENT</div>
+          <input value="{{ tRecipient }}" onChange="{{ setRecipient }}" placeholder="Recipient name" style="width:100%; padding:13px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; margin-bottom:11px; outline:none; color:#0d1a36;" />
+          <input value="{{ tAccount }}" onChange="{{ setAccount }}" placeholder="Account number" style="width:100%; padding:13px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; font-family:'JetBrains Mono',monospace; margin-bottom:22px; outline:none; color:#0d1a36;" />
+
+          <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">AMOUNT</div>
+          <div style="display:flex; align-items:center; border:1px solid #e1e7f1; border-radius:12px; padding:4px 15px; margin-bottom:11px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:600; color:#8a93a8;">Rp</span>
+            <input value="{{ tAmountFmt }}" onChange="{{ setAmount }}" placeholder="0" inputmode="numeric" style="flex:1; border:none; outline:none; padding:12px 10px; font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; text-align:right; color:#0d1a36; background:transparent;" />
+          </div>
+          <input value="{{ tNote }}" onChange="{{ setNote }}" placeholder="Add a note (optional)" style="width:100%; padding:13px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14px; margin-bottom:8px; outline:none; color:#0d1a36;" />
+
+          <sc-if value="{{ tError }}" hint-placeholder-val="">
+            <div style="color:#e0485f; font-size:12.5px; font-weight:600; margin:6px 2px 0;">{{ tError }}</div>
+          </sc-if>
+
+          <button onClick="{{ continueTransfer }}" style="width:100%; margin-top:18px; padding:15px; border:none; border-radius:13px; background:linear-gradient(135deg,#2554f6,#1c40b8); color:#fff; font-size:15px; font-weight:700; box-shadow:0 12px 26px -10px rgba(37,84,246,.6);">Continue</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ tConfirmStep }}" hint-placeholder-val="">
+        <div style="background:#fff; border:1px solid #e6eaf3; border-radius:22px; padding:28px 30px;">
+          <div style="font-size:18px; font-weight:800; margin-bottom:4px;">Review Transfer</div>
+          <div style="font-size:13px; color:#8a93a8; font-weight:500; margin-bottom:22px;">Please confirm the details before sending.</div>
+          <div style="text-align:center; padding:18px 0 22px;">
+            <div style="font-size:12.5px; color:#8a93a8; font-weight:600;">You are sending</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:38px; font-weight:700; letter-spacing:-1px; margin-top:4px;">Rp {{ tAmountFmt }}</div>
+          </div>
+          <div style="border:1px solid #eef1f7; border-radius:15px; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; padding:14px 17px; border-bottom:1px solid #eef1f7;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">To</span><span style="font-size:13.5px; font-weight:700;">{{ tRecipient }}</span></div>
+            <div style="display:flex; justify-content:space-between; padding:14px 17px; border-bottom:1px solid #eef1f7;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">Account</span><span style="font-size:13.5px; font-weight:700; font-family:'JetBrains Mono',monospace;">{{ tAccount }}</span></div>
+            <div style="display:flex; justify-content:space-between; padding:14px 17px; border-bottom:1px solid #eef1f7;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">From</span><span style="font-size:13.5px; font-weight:700;">Main Savings · 4021</span></div>
+            <div style="display:flex; justify-content:space-between; padding:14px 17px;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">Fee</span><span style="font-size:13.5px; font-weight:700; color:#1f9d6b;">Free</span></div>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:20px;">
+            <button onClick="{{ backToForm }}" style="flex:0 0 38%; padding:15px; border:1px solid #e1e7f1; border-radius:13px; background:#fff; color:#46506a; font-size:15px; font-weight:700;">Back</button>
+            <button onClick="{{ confirmTransfer }}" style="flex:1; padding:15px; border:none; border-radius:13px; background:linear-gradient(135deg,#2554f6,#1c40b8); color:#fff; font-size:15px; font-weight:700; box-shadow:0 12px 26px -10px rgba(37,84,246,.6);">Confirm & Send</button>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ tDoneStep }}" hint-placeholder-val="">
+        <div style="background:#fff; border:1px solid #e6eaf3; border-radius:22px; padding:40px 30px; text-align:center;">
+          <div style="width:74px; height:74px; border-radius:50%; background:#e9f8f0; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; animation:gbPop .5s ease both;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1f9d6b"/><path d="m7 12.5 3.2 3.2L17 8.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="font-size:20px; font-weight:800;">Transfer Successful</div>
+          <div style="font-size:13.5px; color:#8a93a8; font-weight:500; margin-top:6px;">{{ tAmountSent }} sent to {{ tRecipient }}</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#aab2c5; margin-top:10px;">REF · {{ tRef }}</div>
+          <div style="display:flex; gap:12px; margin-top:26px;">
+            <button onClick="{{ newTransfer }}" style="flex:1; padding:14px; border:1px solid #e1e7f1; border-radius:13px; background:#fff; color:#46506a; font-size:14.5px; font-weight:700;">New Transfer</button>
+            <button onClick="{{ goDash }}" style="flex:1; padding:14px; border:none; border-radius:13px; background:#0d1a36; color:#fff; font-size:14.5px; font-weight:700;">Dashboard</button>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <!-- HISTORY -->
+      <sc-if value="{{ onHistoryB }}" hint-placeholder-val="">
+      <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:22px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:18px;">
+          <div style="display:flex; gap:8px;">
+            <button data-chip data-on="{{ fAll }}" onClick="{{ filterAll }}" style="padding:8px 16px; border:1px solid #e1e7f1; background:#fff; color:#586079; border-radius:10px; font-size:13px; font-weight:700; transition:.15s;">All</button>
+            <button data-chip data-on="{{ fIn }}" onClick="{{ filterIn }}" style="padding:8px 16px; border:1px solid #e1e7f1; background:#fff; color:#586079; border-radius:10px; font-size:13px; font-weight:700; transition:.15s;">Income</button>
+            <button data-chip data-on="{{ fOut }}" onClick="{{ filterOut }}" style="padding:8px 16px; border:1px solid #e1e7f1; background:#fff; color:#586079; border-radius:10px; font-size:13px; font-weight:700; transition:.15s;">Expense</button>
+          </div>
+          <div style="font-size:13px; color:#8a93a8; font-weight:600;">{{ histCount }} transactions</div>
+        </div>
+        <sc-for list="{{ histList }}" as="t" hint-placeholder-count="8">
+          <div data-row style="display:flex; align-items:center; gap:14px; padding:13px 8px; border-radius:12px; border-bottom:1px solid #f2f4f9; transition:.15s;">
+            <span style="width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:{{ t.bg }}; color:{{ t.fg }};">{{ t.initials }}</span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:700;">{{ t.name }}</div>
+              <div style="font-size:12px; color:#8a93a8; font-weight:500;">{{ t.sub }}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:14.5px; font-weight:600; color:{{ t.amtColor }};">{{ t.amtStr }}</div>
+              <div style="font-size:11.5px; color:#aab2c5; font-weight:500;">{{ t.dateStr }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <!-- PROFILE -->
+      <sc-if value="{{ onProfileB }}" hint-placeholder-val="">
+      <div style="display:grid; grid-template-columns:340px 1fr; gap:22px;" data-cols2>
+        <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:26px 24px; height:fit-content;">
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div style="width:84px; height:84px; border-radius:24px; background:linear-gradient(135deg,#2554f6,#5b8bff); color:#fff; font-weight:800; font-size:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 26px -10px rgba(37,84,246,.6);">RP</div>
+            <div style="font-size:18px; font-weight:800; margin-top:14px;">Rangga Pratama</div>
+            <div style="font-size:13px; color:#8a93a8; font-weight:500;">rangga@geeksmail.com</div>
+            <span style="margin-top:12px; padding:5px 13px; border-radius:20px; background:#eef3ff; color:#2554f6; font-size:12px; font-weight:700;">Verified · Personal</span>
+          </div>
+          <div style="margin-top:22px; padding-top:18px; border-top:1px solid #eef1f7; display:flex; flex-direction:column; gap:13px;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">Account No.</span><span style="font-size:13px; font-weight:700; font-family:'JetBrains Mono',monospace;">5421 4021</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">Member since</span><span style="font-size:13px; font-weight:700;">Mar 2021</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:13px; color:#8a93a8; font-weight:600;">Branch</span><span style="font-size:13px; font-weight:700;">Jakarta Pusat</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:22px 24px;">
+            <div style="font-size:15px; font-weight:800; margin-bottom:16px;">Security</div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid #f2f4f9;">
+                <div><div style="font-size:14px; font-weight:700;">Two-factor authentication</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Require an OTP code on login</div></div>
+                <button data-tg data-on="{{ tg2fa }}" onClick="{{ toggle2fa }}" style="width:44px; height:26px; border-radius:20px; border:none; background:#d4dae6; position:relative; transition:.2s; flex:0 0 auto;"><span data-knob style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></button>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid #f2f4f9;">
+                <div><div style="font-size:14px; font-weight:700;">Biometric login</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Use fingerprint or Face ID</div></div>
+                <button data-tg data-on="{{ tgBio }}" onClick="{{ toggleBio }}" style="width:44px; height:26px; border-radius:20px; border:none; background:#d4dae6; position:relative; transition:.2s; flex:0 0 auto;"><span data-knob style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></button>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0;">
+                <div><div style="font-size:14px; font-weight:700;">Change password</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Last changed 3 months ago</div></div>
+                <button style="padding:8px 15px; border:1px solid #e1e7f1; border-radius:10px; background:#fff; color:#2554f6; font-size:13px; font-weight:700;">Update</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:22px 24px;">
+            <div style="font-size:15px; font-weight:800; margin-bottom:16px;">Notifications</div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid #f2f4f9;">
+              <div><div style="font-size:14px; font-weight:700;">Email alerts</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Transaction receipts to your inbox</div></div>
+              <button data-tg data-on="{{ tgEmail }}" onClick="{{ toggleEmail }}" style="width:44px; height:26px; border-radius:20px; border:none; background:#d4dae6; position:relative; transition:.2s; flex:0 0 auto;"><span data-knob style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></button>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 0;">
+              <div><div style="font-size:14px; font-weight:700;">Push notifications</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Real-time alerts on this device</div></div>
+              <button data-tg data-on="{{ tgPush }}" onClick="{{ togglePush }}" style="width:44px; height:26px; border-radius:20px; border:none; background:#d4dae6; position:relative; transition:.2s; flex:0 0 auto;"><span data-knob style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ADMIN -->
+      <sc-if value="{{ onAdminB }}" hint-placeholder-val="">
+      <div style="display:flex; flex-direction:column; gap:22px;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;" data-cols3>
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:18px; padding:18px 20px;">
+            <div style="font-size:12.5px; color:#8a93a8; font-weight:600;">Total Users</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; margin-top:6px;">8,412</div>
+            <div style="font-size:12px; color:#1f9d6b; font-weight:700; margin-top:4px;">▲ 3.2% this week</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:18px; padding:18px 20px;">
+            <div style="font-size:12.5px; color:#8a93a8; font-weight:600;">Total Deposits</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; margin-top:6px;">Rp 4.2B</div>
+            <div style="font-size:12px; color:#1f9d6b; font-weight:700; margin-top:4px;">▲ 1.1% this week</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:18px; padding:18px 20px;">
+            <div style="font-size:12.5px; color:#8a93a8; font-weight:600;">Active Sessions</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; margin-top:6px;">1,287</div>
+            <div style="font-size:12px; color:#8a93a8; font-weight:700; margin-top:4px;">Live now</div>
+          </div>
+          <div style="background:#fff; border:1px solid #e6eaf3; border-radius:18px; padding:18px 20px;">
+            <div style="font-size:12.5px; color:#8a93a8; font-weight:600;">Flagged</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; margin-top:6px; color:#e0485f;">23</div>
+            <div style="font-size:12px; color:#e0485f; font-weight:700; margin-top:4px;">Needs review</div>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #e6eaf3; border-radius:20px; padding:22px 24px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <div style="font-size:15px; font-weight:800;">User Management</div>
+            <button style="padding:9px 16px; border:none; border-radius:11px; background:#0d1a36; color:#fff; font-size:13px; font-weight:700;">+ New User</button>
+          </div>
+          <div style="display:flex; padding:0 12px 11px; border-bottom:1.5px solid #eef1f7;">
+            <div style="flex:2.2; font-size:11.5px; color:#9aa4ba; font-weight:700; letter-spacing:.4px;">USER</div>
+            <div style="flex:1; font-size:11.5px; color:#9aa4ba; font-weight:700; letter-spacing:.4px;">ROLE</div>
+            <div style="flex:1.3; font-size:11.5px; color:#9aa4ba; font-weight:700; letter-spacing:.4px; text-align:right;">BALANCE</div>
+            <div style="flex:1; font-size:11.5px; color:#9aa4ba; font-weight:700; letter-spacing:.4px; text-align:right;">STATUS</div>
+          </div>
+          <sc-for list="{{ users }}" as="u" hint-placeholder-count="6">
+            <div data-row style="display:flex; align-items:center; padding:13px 12px; border-bottom:1px solid #f2f4f9; transition:.15s;">
+              <div style="flex:2.2; display:flex; align-items:center; gap:12px; min-width:0;">
+                <span style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; background:{{ u.bg }}; color:{{ u.fg }};">{{ u.initials }}</span>
+                <div style="min-width:0;"><div style="font-size:13.5px; font-weight:700;">{{ u.name }}</div><div style="font-size:11.5px; color:#8a93a8; font-weight:500;">{{ u.email }}</div></div>
+              </div>
+              <div style="flex:1;"><span style="font-size:12.5px; font-weight:700; color:{{ u.roleColor }};">{{ u.role }}</span></div>
+              <div style="flex:1.3; text-align:right; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600;">{{ u.balance }}</div>
+              <div style="flex:1; text-align:right;"><span style="padding:4px 11px; border-radius:20px; font-size:11.5px; font-weight:700; background:{{ u.statusBg }}; color:{{ u.statusFg }};">{{ u.status }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="">
+    <div onClick="{{ closeModal }}" style="position:fixed; inset:0; background:rgba(13,26,54,.45); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:24px; z-index:60;">
+      <div onClick="{{ stop }}" style="width:100%; max-width:440px; background:#fff; border-radius:22px; padding:26px 28px; box-shadow:0 30px 70px -20px rgba(13,26,54,.5); opacity:1; animation:gbModalIn .28s ease;">
+
+        <!-- TOP UP -->
+        <sc-if value="{{ isTopup }}" hint-placeholder-val="">
+          <sc-if value="{{ modalFormStep }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px;">
+              <div><div style="font-size:18px; font-weight:800;">Top Up</div><div style="font-size:13px; color:#8a93a8; font-weight:500; margin-top:3px;">Add funds to your Main Savings</div></div>
+              <button onClick="{{ closeModal }}" style="width:34px; height:34px; border-radius:10px; border:1px solid #eef1f7; background:#fff; color:#8a93a8; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center;">×</button>
+            </div>
+            <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">METHOD</div>
+            <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:20px;">
+              <button data-pick data-on="{{ tuM1 }}" onClick="{{ pickTuBank }}" style="display:flex; align-items:center; gap:12px; padding:13px 15px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; text-align:left; transition:.15s;"><span style="width:38px; height:38px; border-radius:10px; background:#eef3ff; color:#2554f6; display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 10 12 4l8 6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 10v8h14v-8" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div style="font-size:14px; font-weight:700;">Bank Transfer</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">Free · instant</div></div></button>
+              <button data-pick data-on="{{ tuM2 }}" onClick="{{ pickTuCard }}" style="display:flex; align-items:center; gap:12px; padding:13px 15px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; text-align:left; transition:.15s;"><span style="width:38px; height:38px; border-radius:10px; background:#e9f8f0; color:#1f9d6b; display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div style="font-size:14px; font-weight:700;">Debit Card</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">•••• 4021</div></div></button>
+              <button data-pick data-on="{{ tuM3 }}" onClick="{{ pickTuVA }}" style="display:flex; align-items:center; gap:12px; padding:13px 15px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; text-align:left; transition:.15s;"><span style="width:38px; height:38px; border-radius:10px; background:#f1eefe; color:#6b4ee0; display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M9 7h6M9 11h6M9 15h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><div><div style="font-size:14px; font-weight:700;">Virtual Account</div><div style="font-size:12px; color:#8a93a8; font-weight:500;">8808 5421 4021</div></div></button>
+            </div>
+            <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">AMOUNT</div>
+            <div style="display:flex; align-items:center; border:1px solid #e1e7f1; border-radius:12px; padding:4px 15px; margin-bottom:11px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:600; color:#8a93a8;">Rp</span>
+              <input value="{{ tuAmountFmt }}" onChange="{{ setTuAmount }}" placeholder="0" inputmode="numeric" style="flex:1; border:none; outline:none; padding:12px 10px; font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; text-align:right; color:#0d1a36; background:transparent;" />
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <button data-amt data-on="{{ tuQ1 }}" onClick="{{ quickTu1 }}" style="flex:1; padding:9px 0; border:1px solid #e1e7f1; border-radius:10px; font-size:12.5px; font-weight:700; font-family:'JetBrains Mono',monospace; color:#586079; transition:.15s;">100rb</button>
+              <button data-amt data-on="{{ tuQ2 }}" onClick="{{ quickTu2 }}" style="flex:1; padding:9px 0; border:1px solid #e1e7f1; border-radius:10px; font-size:12.5px; font-weight:700; font-family:'JetBrains Mono',monospace; color:#586079; transition:.15s;">250rb</button>
+              <button data-amt data-on="{{ tuQ3 }}" onClick="{{ quickTu3 }}" style="flex:1; padding:9px 0; border:1px solid #e1e7f1; border-radius:10px; font-size:12.5px; font-weight:700; font-family:'JetBrains Mono',monospace; color:#586079; transition:.15s;">500rb</button>
+              <button data-amt data-on="{{ tuQ4 }}" onClick="{{ quickTu4 }}" style="flex:1; padding:9px 0; border:1px solid #e1e7f1; border-radius:10px; font-size:12.5px; font-weight:700; font-family:'JetBrains Mono',monospace; color:#586079; transition:.15s;">1jt</button>
+            </div>
+            <sc-if value="{{ modalError }}" hint-placeholder-val=""><div style="color:#e0485f; font-size:12.5px; font-weight:600; margin:6px 2px 0;">{{ modalError }}</div></sc-if>
+            <button onClick="{{ submitTopup }}" style="width:100%; margin-top:16px; padding:15px; border:none; border-radius:13px; background:linear-gradient(135deg,#1f9d6b,#17b377); color:#fff; font-size:15px; font-weight:700; box-shadow:0 12px 26px -10px rgba(31,157,107,.55);">Top Up Now</button>
+          </sc-if>
+          <sc-if value="{{ modalDoneStep }}" hint-placeholder-val="">
+            <div style="text-align:center; padding:14px 4px 6px;">
+              <div style="width:70px; height:70px; border-radius:50%; background:#e9f8f0; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; animation:gbPop .5s ease both;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1f9d6b"/><path d="m7 12.5 3.2 3.2L17 8.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="font-size:19px; font-weight:800;">Top Up Successful</div>
+              <div style="font-size:13.5px; color:#8a93a8; font-weight:500; margin-top:6px;">{{ modalDoneAmt }} added to Main Savings</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#aab2c5; margin-top:9px;">New balance · {{ balanceStr }}</div>
+              <button onClick="{{ closeModal }}" style="width:100%; margin-top:24px; padding:14px; border:none; border-radius:13px; background:#0d1a36; color:#fff; font-size:14.5px; font-weight:700;">Done</button>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- PAY BILL -->
+        <sc-if value="{{ isPaybill }}" hint-placeholder-val="">
+          <sc-if value="{{ modalFormStep }}" hint-placeholder-val="">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px;">
+              <div><div style="font-size:18px; font-weight:800;">Pay Bill</div><div style="font-size:13px; color:#8a93a8; font-weight:500; margin-top:3px;">Pay your monthly bills instantly</div></div>
+              <button onClick="{{ closeModal }}" style="width:34px; height:34px; border-radius:10px; border:1px solid #eef1f7; background:#fff; color:#8a93a8; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center;">×</button>
+            </div>
+            <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">BILLER</div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px;">
+              <button data-pick data-on="{{ pb1 }}" onClick="{{ pickPbPLN }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; padding:13px 4px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; transition:.15s;"><span style="width:34px; height:34px; border-radius:9px; background:#fff1e8; color:#e07a2c; display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span style="font-size:11.5px; font-weight:700;">PLN</span></button>
+              <button data-pick data-on="{{ pb2 }}" onClick="{{ pickPbPDAM }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; padding:13px 4px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; transition:.15s;"><span style="width:34px; height:34px; border-radius:9px; background:#eaf4ff; color:#2554f6; display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span style="font-size:11.5px; font-weight:700;">PDAM</span></button>
+              <button data-pick data-on="{{ pb3 }}" onClick="{{ pickPbNet }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; padding:13px 4px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; transition:.15s;"><span style="width:34px; height:34px; border-radius:9px; background:#f1eefe; color:#6b4ee0; display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M5 9a10 10 0 0 1 14 0M8 12.5a6 6 0 0 1 8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="currentColor"/></svg></span><span style="font-size:11.5px; font-weight:700;">Internet</span></button>
+              <button data-pick data-on="{{ pb4 }}" onClick="{{ pickPbBPJS }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; padding:13px 4px; border:1.5px solid #e1e7f1; background:#fff; border-radius:13px; transition:.15s;"><span style="width:34px; height:34px; border-radius:9px; background:#e9f8f0; color:#1f9d6b; display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 4 5 7v5c0 4 3 7 7 8 4-1 7-4 7-8V7l-7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span style="font-size:11.5px; font-weight:700;">BPJS</span></button>
+            </div>
+            <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">{{ pbAccountLabel }}</div>
+            <input value="{{ pbAccount }}" onChange="{{ setPbAccount }}" placeholder="Enter number" style="width:100%; padding:13px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; font-family:'JetBrains Mono',monospace; margin-bottom:18px; outline:none; color:#0d1a36;" />
+            <div style="font-size:12.5px; font-weight:700; color:#586079; margin-bottom:9px;">AMOUNT</div>
+            <div style="display:flex; align-items:center; border:1px solid #e1e7f1; border-radius:12px; padding:4px 15px; margin-bottom:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:600; color:#8a93a8;">Rp</span>
+              <input value="{{ pbAmountFmt }}" onChange="{{ setPbAmount }}" placeholder="0" inputmode="numeric" style="flex:1; border:none; outline:none; padding:12px 10px; font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; text-align:right; color:#0d1a36; background:transparent;" />
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:2px 2px 0;"><span style="font-size:12px; color:#8a93a8; font-weight:600;">Available balance</span><span style="font-size:12px; font-weight:700; font-family:'JetBrains Mono',monospace;">{{ balanceStr }}</span></div>
+            <sc-if value="{{ modalError }}" hint-placeholder-val=""><div style="color:#e0485f; font-size:12.5px; font-weight:600; margin:8px 2px 0;">{{ modalError }}</div></sc-if>
+            <button onClick="{{ submitPaybill }}" style="width:100%; margin-top:16px; padding:15px; border:none; border-radius:13px; background:linear-gradient(135deg,#2554f6,#1c40b8); color:#fff; font-size:15px; font-weight:700; box-shadow:0 12px 26px -10px rgba(37,84,246,.6);">Pay {{ pbBillerName }}</button>
+          </sc-if>
+          <sc-if value="{{ modalDoneStep }}" hint-placeholder-val="">
+            <div style="text-align:center; padding:14px 4px 6px;">
+              <div style="width:70px; height:70px; border-radius:50%; background:#e9f8f0; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; animation:gbPop .5s ease both;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1f9d6b"/><path d="m7 12.5 3.2 3.2L17 8.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="font-size:19px; font-weight:800;">Payment Successful</div>
+              <div style="font-size:13.5px; color:#8a93a8; font-weight:500; margin-top:6px;">{{ modalDoneAmt }} paid to {{ pbBillerName }}</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#aab2c5; margin-top:9px;">New balance · {{ balanceStr }}</div>
+              <button onClick="{{ closeModal }}" style="width:100%; margin-top:24px; padding:14px; border:none; border-radius:13px; background:#0d1a36; color:#fff; font-size:14.5px; font-weight:700;">Done</button>
+            </div>
+          </sc-if>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="">
+    <div style="position:fixed; bottom:28px; left:50%; transform:translateX(-50%); background:#0d1a36; color:#fff; padding:13px 22px; border-radius:13px; font-size:13.5px; font-weight:600; box-shadow:0 16px 36px -10px rgba(13,26,54,.6); animation:gbFade .3s ease both; z-index:50;">{{ toast }}</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- AUTH -->
+<sc-if value="{{ notAuthed }}" hint-placeholder-val="">
+<div data-authsplit style="display:grid; grid-template-columns:1.05fr 1fr; min-height:760px; height:100%; background:#fff;">
+  <div data-authbrand style="position:relative; overflow:hidden; background:linear-gradient(155deg,#14308f 0%,#1c40b8 50%,#2554f6 100%); padding:52px 56px; display:flex; flex-direction:column; justify-content:space-between;">
+    <div style="position:absolute; top:-80px; right:-80px; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%);"></div>
+    <div style="position:absolute; bottom:-120px; left:-60px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);"></div>
+    <div style="position:relative; display:flex; align-items:center; gap:12px;">
+      <div style="width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 10 12 4l8 6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M5 10v8h14v-8M9 18v-5h6v5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="color:#fff; font-weight:800; font-size:20px; letter-spacing:-.3px;">Geeks Bank</div>
+    </div>
+    <div style="position:relative;">
+      <div style="color:#fff; font-size:38px; font-weight:800; line-height:1.15; letter-spacing:-1px;">Banking that<br>keeps up with you.</div>
+      <div style="color:#c5d4ff; font-size:15px; font-weight:500; margin-top:18px; max-width:380px; line-height:1.6;">Move money, track spending, and manage every account — all in one secure place.</div>
+      <div style="display:flex; gap:30px; margin-top:34px;">
+        <div><div style="color:#fff; font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700;">8.4M+</div><div style="color:#9fb6ff; font-size:12px; font-weight:600;">Customers</div></div>
+        <div><div style="color:#fff; font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700;">256-bit</div><div style="color:#9fb6ff; font-size:12px; font-weight:600;">Encryption</div></div>
+        <div><div style="color:#fff; font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700;">24/7</div><div style="color:#9fb6ff; font-size:12px; font-weight:600;">Support</div></div>
+      </div>
+    </div>
+    <div style="position:relative; color:#8ea4e6; font-size:12px; font-weight:500;">© 2026 Geeks Bank · Member FDIC equivalent</div>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:center; padding:40px 28px;">
+    <div style="width:100%; max-width:380px;">
+      <div style="font-size:25px; font-weight:800; letter-spacing:-.5px;">{{ authTitle }}</div>
+      <div style="font-size:14px; color:#8a93a8; font-weight:500; margin-top:5px;">{{ authSub }}</div>
+
+      <div style="display:flex; gap:6px; background:#f1f4fa; padding:5px; border-radius:13px; margin:24px 0 22px;">
+        <button data-on="{{ tabLogin }}" onClick="{{ showLogin }}" style="flex:1; padding:10px; border:none; border-radius:9px; font-size:13.5px; font-weight:700; background:{{ loginTabBg }}; color:{{ loginTabFg }}; box-shadow:{{ loginTabSh }}; transition:.18s;">Sign In</button>
+        <button data-on="{{ tabReg }}" onClick="{{ showRegister }}" style="flex:1; padding:10px; border:none; border-radius:9px; font-size:13.5px; font-weight:700; background:{{ regTabBg }}; color:{{ regTabFg }}; box-shadow:{{ regTabSh }}; transition:.18s;">Register</button>
+      </div>
+
+      <sc-if value="{{ regMode }}" hint-placeholder-val="">
+        <input placeholder="Full name" style="width:100%; padding:14px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; margin-bottom:12px; outline:none;" />
+      </sc-if>
+      <input value="{{ email }}" onChange="{{ setEmail }}" placeholder="Email address" style="width:100%; padding:14px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; margin-bottom:12px; outline:none; color:#0d1a36;" />
+      <input value="{{ password }}" onChange="{{ setPassword }}" type="password" placeholder="Password" style="width:100%; padding:14px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; margin-bottom:12px; outline:none; color:#0d1a36;" />
+      <sc-if value="{{ regMode }}" hint-placeholder-val="">
+        <input type="password" placeholder="Confirm password" style="width:100%; padding:14px 15px; border:1px solid #e1e7f1; border-radius:12px; font-size:14.5px; margin-bottom:12px; outline:none;" />
+      </sc-if>
+
+      <sc-if value="{{ loginMode }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:2px 2px 18px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:#586079; font-weight:600;"><input type="checkbox" checked style="width:15px; height:15px; accent-color:#2554f6;" />Remember me</label>
+          <span style="font-size:13px; color:#2554f6; font-weight:700;">Forgot password?</span>
+        </div>
+      </sc-if>
+
+      <button onClick="{{ doAuth }}" style="width:100%; padding:15px; border:none; border-radius:13px; background:linear-gradient(135deg,#2554f6,#1c40b8); color:#fff; font-size:15px; font-weight:700; box-shadow:0 12px 26px -10px rgba(37,84,246,.6); margin-top:6px;">{{ authBtn }}</button>
+
+      <div style="display:flex; align-items:center; gap:14px; margin:22px 0;"><span style="flex:1; height:1px; background:#eef1f7;"></span><span style="font-size:12px; color:#aab2c5; font-weight:600;">OR</span><span style="flex:1; height:1px; background:#eef1f7;"></span></div>
+      <button style="width:100%; padding:13px; border:1px solid #e1e7f1; border-radius:13px; background:#fff; color:#46506a; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.5a4.7 4.7 0 0 1-2 3.1v2.6h3.2c1.9-1.7 3-4.3 3-7.5Z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4l-3.2-2.6c-.9.6-2 1-3.5 1-2.7 0-5-1.8-5.8-4.3H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.2 13.7a6 6 0 0 1 0-3.8V7.2H2.9a10 10 0 0 0 0 9l3.3-2.5Z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 2.9 7.2l3.3 2.6C7 7.4 9.3 5.9 12 5.9Z"/></svg>
+        Continue with Google
+      </button>
+
+      <div style="text-align:center; margin-top:22px; font-size:13px; color:#8a93a8; font-weight:500;">{{ switchPrompt }} <span onClick="{{ toggleAuthTab }}" style="color:#2554f6; font-weight:700; cursor:pointer;">{{ switchAction }}</span></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  state = {
+    authed: false,
+    authTab: 'login',
+    email: 'rangga@geeksmail.com',
+    password: 'hunter2',
+    screen: 'dashboard',
+    balance: 84250000,
+    histFilter: 'all',
+    toast: null,
+    tStep: 'form',
+    tRecipient: '',
+    tAccount: '',
+    tAmount: '',
+    tNote: '',
+    tError: '',
+    tRef: '',
+    tAmountSent: '',
+    modal: null,
+    modalStep: 'form',
+    modalError: '',
+    modalDoneAmt: '',
+    tuMethod: 'bank',
+    tuAmount: '',
+    pbBiller: 'PLN',
+    pbAccount: '',
+    pbAmount: '',
+    set2fa: true,
+    setBio: false,
+    setEmailN: true,
+    setPush: true,
+    txns: [
+      { id:1, name:'Tokopedia', sub:'Shopping · QRIS', amt:-485000, dir:'out', date:'Jun 24', initials:'TK', bg:'#e9f8f0', fg:'#1f9d6b' },
+      { id:2, name:'Salary · PT Geekstra', sub:'Payroll deposit', amt:12400000, dir:'in', date:'Jun 23', initials:'PG', bg:'#eef3ff', fg:'#2554f6' },
+      { id:3, name:'Andra Wijaya', sub:'Transfer · BCA', amt:-1500000, dir:'out', date:'Jun 22', initials:'AW', bg:'#f1eefe', fg:'#6b4ee0' },
+      { id:4, name:'PLN Postpaid', sub:'Electricity bill', amt:-342000, dir:'out', date:'Jun 21', initials:'PL', bg:'#fff1e8', fg:'#e07a2c' },
+      { id:5, name:'Grab', sub:'Transport', amt:-58000, dir:'out', date:'Jun 21', initials:'GR', bg:'#e9f8f0', fg:'#1f9d6b' },
+      { id:6, name:'Sinta Maharani', sub:'Transfer · Geeks Bank', amt:750000, dir:'in', date:'Jun 20', initials:'SM', bg:'#fdeef4', fg:'#d6457f' },
+      { id:7, name:'Netflix', sub:'Subscription', amt:-186000, dir:'out', date:'Jun 19', initials:'NF', bg:'#fdeaec', fg:'#e0485f' },
+      { id:8, name:'Spotify', sub:'Subscription', amt:-54990, dir:'out', date:'Jun 18', initials:'SP', bg:'#e9f8f0', fg:'#1f9d6b' },
+      { id:9, name:'Bank Interest', sub:'Monthly interest', amt:64200, dir:'in', date:'Jun 15', initials:'GB', bg:'#eef3ff', fg:'#2554f6' },
+    ],
+  };
+
+  fmt(n){ return 'Rp ' + Math.round(Math.abs(n)).toLocaleString('id-ID'); }
+  grp(s){ s = (s||'').replace(/\D/g,''); return s ? parseInt(s,10).toLocaleString('id-ID') : ''; }
+
+  flash(msg){ this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(()=>this.setState({ toast: null }), 2600); }
+
+  enrich(t){
+    return { ...t,
+      amtStr: (t.amt>0?'+':'−') + this.fmt(t.amt),
+      amtColor: t.amt>0 ? '#1f9d6b' : '#0d1a36',
+      dateStr: t.date };
+  }
+
+  renderVals(){
+    const s = this.state;
+    const screen = s.screen;
+    const users = [
+      { name:'Rangga Pratama', email:'rangga@geeksmail.com', role:'Customer', balance:'Rp 84.2M', status:'Active', initials:'RP', bg:'#eef3ff', fg:'#2554f6', roleColor:'#586079', statusBg:'#e9f8f0', statusFg:'#1f9d6b' },
+      { name:'Sinta Maharani', email:'sinta.m@geeksmail.com', role:'Customer', balance:'Rp 21.7M', status:'Active', initials:'SM', bg:'#fdeef4', fg:'#d6457f', roleColor:'#586079', statusBg:'#e9f8f0', statusFg:'#1f9d6b' },
+      { name:'Andra Wijaya', email:'andra.w@geeksmail.com', role:'Customer', balance:'Rp 3.1M', status:'Flagged', initials:'AW', bg:'#f1eefe', fg:'#6b4ee0', roleColor:'#586079', statusBg:'#fdeaec', statusFg:'#e0485f' },
+      { name:'Dewi Lestari', email:'dewi.l@geeksmail.com', role:'Customer', balance:'Rp 56.9M', status:'Active', initials:'DL', bg:'#fff1e8', fg:'#e07a2c', roleColor:'#586079', statusBg:'#e9f8f0', statusFg:'#1f9d6b' },
+      { name:'Budi Santoso', email:'budi.admin@geeksbank.io', role:'Admin', balance:'—', status:'Active', initials:'BS', bg:'#0d1a36', fg:'#ffffff', roleColor:'#2554f6', statusBg:'#e9f8f0', statusFg:'#1f9d6b' },
+      { name:'Maya Kusuma', email:'maya.k@geeksmail.com', role:'Customer', balance:'Rp 940K', status:'Suspended', initials:'MK', bg:'#fdeaec', fg:'#e0485f', roleColor:'#586079', statusBg:'#fff1e8', statusFg:'#e07a2c' },
+    ];
+
+    const all = s.txns.map(t=>this.enrich(t));
+    let hist = all;
+    if (s.histFilter==='in') hist = all.filter(t=>t.amt>0);
+    if (s.histFilter==='out') hist = all.filter(t=>t.amt<0);
+
+    const bars = [
+      {label:'Jan', in:'52%', out:'30%'}, {label:'Feb', in:'68%', out:'22%'},
+      {label:'Mar', in:'44%', out:'40%'}, {label:'Apr', in:'74%', out:'18%'},
+      {label:'May', in:'60%', out:'34%'}, {label:'Jun', in:'88%', out:'26%'},
+      {label:'Jul', in:'40%', out:'24%'},
+    ];
+
+    const titles = {
+      dashboard:['Good evening, Rangga','Here is your financial overview'],
+      transfer:['Transfer','Move money securely in seconds'],
+      history:['Transactions','Every movement in your account'],
+      profile:['Profile & Settings','Manage your account and security'],
+      admin:['Admin Console','Operations overview · internal'],
+    };
+
+    return {
+      authed: s.authed,
+      notAuthed: !s.authed,
+      screen,
+      // nav active flags
+      onDash: screen==='dashboard'?'1':'0', onTransfer: screen==='transfer'?'1':'0',
+      onHistory: screen==='history'?'1':'0', onProfile: screen==='profile'?'1':'0',
+      onAdmin: screen==='admin'?'1':'0',
+      onDashB: screen==='dashboard', onTransferB: screen==='transfer',
+      onHistoryB: screen==='history', onProfileB: screen==='profile', onAdminB: screen==='admin',
+      goDash:()=>this.setState({screen:'dashboard'}),
+      goTransfer:()=>this.setState({screen:'transfer'}),
+      goHistory:()=>this.setState({screen:'history'}),
+      goProfile:()=>this.setState({screen:'profile'}),
+      goAdmin:()=>this.setState({screen:'admin'}),
+      logout:()=>this.setState({authed:false, screen:'dashboard', tStep:'form'}),
+
+      pageTitle: (titles[screen]||['',''])[0],
+      pageSub: (titles[screen]||['',''])[1],
+
+      balanceStr: this.fmt(s.balance),
+      incomeStr: 'Rp 13.214.200', spendStr: 'Rp 2.625.990',
+      recent: all.slice(0,5),
+      bars,
+
+      // history
+      histList: hist, histCount: hist.length,
+      fAll: s.histFilter==='all'?'1':'0', fIn: s.histFilter==='in'?'1':'0', fOut: s.histFilter==='out'?'1':'0',
+      filterAll:()=>this.setState({histFilter:'all'}),
+      filterIn:()=>this.setState({histFilter:'in'}),
+      filterOut:()=>this.setState({histFilter:'out'}),
+
+      // transfer
+      tFormStep: s.tStep==='form', tConfirmStep: s.tStep==='confirm', tDoneStep: s.tStep==='done',
+      tRecipient: s.tRecipient, tAccount: s.tAccount, tNote: s.tNote, tError: s.tError,
+      tAmountFmt: this.grp(s.tAmount), tAmountSent: s.tAmountSent, tRef: s.tRef,
+      setRecipient:(e)=>this.setState({tRecipient:e.target.value, tError:''}),
+      setAccount:(e)=>this.setState({tAccount:e.target.value.replace(/[^0-9]/g,''), tError:''}),
+      setAmount:(e)=>this.setState({tAmount:e.target.value.replace(/\D/g,''), tError:''}),
+      setNote:(e)=>this.setState({tNote:e.target.value}),
+      continueTransfer:()=>{
+        const amt = parseInt(s.tAmount||'0',10);
+        if(!s.tRecipient.trim()) return this.setState({tError:'Please enter a recipient name.'});
+        if(!s.tAccount.trim()) return this.setState({tError:'Please enter an account number.'});
+        if(!amt || amt<10000) return this.setState({tError:'Minimum transfer is Rp 10.000.'});
+        if(amt>s.balance) return this.setState({tError:'Amount exceeds your available balance.'});
+        this.setState({tStep:'confirm', tError:''});
+      },
+      backToForm:()=>this.setState({tStep:'form'}),
+      confirmTransfer:()=>{
+        const amt = parseInt(s.tAmount||'0',10);
+        const ref = 'GB' + Date.now().toString().slice(-9);
+        const txn = { id:Date.now(), name:s.tRecipient, sub:'Transfer · '+(s.tAccount.slice(-4)), amt:-amt, dir:'out', date:'Jun 25', initials:(s.tRecipient.trim()[0]||'T').toUpperCase()+(s.tRecipient.trim().split(' ')[1]?.[0]||'').toUpperCase(), bg:'#eef3ff', fg:'#2554f6' };
+        this.setState({ balance: s.balance-amt, txns:[txn, ...s.txns], tStep:'done', tRef:ref, tAmountSent:this.fmt(amt) });
+        this.flash('Transfer of '+this.fmt(amt)+' sent successfully');
+      },
+      newTransfer:()=>this.setState({tStep:'form', tRecipient:'', tAccount:'', tAmount:'', tNote:'', tError:''}),
+
+      // top up & pay bill modal
+      modalOpen: s.modal!=null,
+      isTopup: s.modal==='topup',
+      isPaybill: s.modal==='paybill',
+      modalFormStep: s.modalStep==='form',
+      modalDoneStep: s.modalStep==='done',
+      modalError: s.modalError,
+      modalDoneAmt: s.modalDoneAmt,
+      stop:(e)=>{ e.stopPropagation(); },
+      openTopup:()=>this.setState({modal:'topup', modalStep:'form', modalError:'', tuMethod:'bank', tuAmount:''}),
+      openPaybill:()=>this.setState({modal:'paybill', modalStep:'form', modalError:'', pbBiller:'PLN', pbAccount:'', pbAmount:''}),
+      closeModal:()=>this.setState({modal:null}),
+      // top up
+      tuM1: s.tuMethod==='bank'?'1':'0', tuM2: s.tuMethod==='card'?'1':'0', tuM3: s.tuMethod==='va'?'1':'0',
+      pickTuBank:()=>this.setState({tuMethod:'bank'}), pickTuCard:()=>this.setState({tuMethod:'card'}), pickTuVA:()=>this.setState({tuMethod:'va'}),
+      tuAmountFmt: this.grp(s.tuAmount),
+      tuQ1: s.tuAmount==='100000'?'1':'0', tuQ2: s.tuAmount==='250000'?'1':'0', tuQ3: s.tuAmount==='500000'?'1':'0', tuQ4: s.tuAmount==='1000000'?'1':'0',
+      setTuAmount:(e)=>this.setState({tuAmount:e.target.value.replace(/\D/g,''), modalError:''}),
+      quickTu1:()=>this.setState({tuAmount:'100000', modalError:''}),
+      quickTu2:()=>this.setState({tuAmount:'250000', modalError:''}),
+      quickTu3:()=>this.setState({tuAmount:'500000', modalError:''}),
+      quickTu4:()=>this.setState({tuAmount:'1000000', modalError:''}),
+      submitTopup:()=>{
+        const amt = parseInt(s.tuAmount||'0',10);
+        if(!amt || amt<10000) return this.setState({modalError:'Minimum top up is Rp 10.000.'});
+        const label = s.tuMethod==='bank'?'Bank Transfer':s.tuMethod==='card'?'Debit Card':'Virtual Account';
+        const txn = { id:Date.now(), name:'Top Up · '+label, sub:'Incoming funds', amt:amt, dir:'in', date:'Jun 25', initials:'TU', bg:'#e9f8f0', fg:'#1f9d6b' };
+        this.setState({ balance:s.balance+amt, txns:[txn, ...s.txns], modalStep:'done', modalDoneAmt:this.fmt(amt) });
+        this.flash('Top up of '+this.fmt(amt)+' successful');
+      },
+      // pay bill
+      pb1: s.pbBiller==='PLN'?'1':'0', pb2: s.pbBiller==='PDAM'?'1':'0', pb3: s.pbBiller==='Internet'?'1':'0', pb4: s.pbBiller==='BPJS'?'1':'0',
+      pickPbPLN:()=>this.setState({pbBiller:'PLN'}), pickPbPDAM:()=>this.setState({pbBiller:'PDAM'}), pickPbNet:()=>this.setState({pbBiller:'Internet'}), pickPbBPJS:()=>this.setState({pbBiller:'BPJS'}),
+      pbBillerName: s.pbBiller==='PLN'?'PLN Electricity':s.pbBiller==='PDAM'?'PDAM Water':s.pbBiller==='Internet'?'Internet':'BPJS Health',
+      pbAccountLabel: s.pbBiller==='Internet'?'CUSTOMER ID':s.pbBiller==='BPJS'?'MEMBER NUMBER':'CUSTOMER NUMBER',
+      pbAmountFmt: this.grp(s.pbAmount),
+      pbAccount: s.pbAccount,
+      setPbAccount:(e)=>this.setState({pbAccount:e.target.value.replace(/[^0-9]/g,''), modalError:''}),
+      setPbAmount:(e)=>this.setState({pbAmount:e.target.value.replace(/\D/g,''), modalError:''}),
+      submitPaybill:()=>{
+        const amt = parseInt(s.pbAmount||'0',10);
+        const name = s.pbBiller==='PLN'?'PLN Electricity':s.pbBiller==='PDAM'?'PDAM Water':s.pbBiller==='Internet'?'Internet':'BPJS Health';
+        if(!s.pbAccount.trim()) return this.setState({modalError:'Please enter your customer number.'});
+        if(!amt || amt<10000) return this.setState({modalError:'Minimum payment is Rp 10.000.'});
+        if(amt>s.balance) return this.setState({modalError:'Amount exceeds your available balance.'});
+        const txn = { id:Date.now(), name:name, sub:'Bill payment · '+s.pbAccount.slice(-4), amt:-amt, dir:'out', date:'Jun 25', initials:name.slice(0,2).toUpperCase(), bg:'#fff1e8', fg:'#e07a2c' };
+        this.setState({ balance:s.balance-amt, txns:[txn, ...s.txns], modalStep:'done', modalDoneAmt:this.fmt(amt) });
+        this.flash('Payment of '+this.fmt(amt)+' to '+name+' successful');
+      },
+
+      // profile toggles
+      tg2fa: s.set2fa?'1':'0', tgBio: s.setBio?'1':'0', tgEmail: s.setEmailN?'1':'0', tgPush: s.setPush?'1':'0',
+      toggle2fa:()=>{ this.setState({set2fa:!s.set2fa}); this.flash(s.set2fa?'Two-factor disabled':'Two-factor enabled'); },
+      toggleBio:()=>{ this.setState({setBio:!s.setBio}); },
+      toggleEmail:()=>{ this.setState({setEmailN:!s.setEmailN}); },
+      togglePush:()=>{ this.setState({setPush:!s.setPush}); },
+
+      // admin
+      users,
+
+      // toast
+      toast: s.toast,
+
+      // auth
+      authTab: s.authTab,
+      loginMode: s.authTab==='login', regMode: s.authTab==='register',
+      tabLogin: s.authTab==='login'?'1':'0', tabReg: s.authTab==='register'?'1':'0',
+      authTitle: s.authTab==='login' ? 'Welcome back' : 'Create your account',
+      authSub: s.authTab==='login' ? 'Sign in to access your Geeks Bank account.' : 'Join 8 million people banking smarter.',
+      authBtn: s.authTab==='login' ? 'Sign In' : 'Create Account',
+      switchPrompt: s.authTab==='login' ? "Don't have an account?" : 'Already have an account?',
+      switchAction: s.authTab==='login' ? 'Register now' : 'Sign in',
+      loginTabBg: s.authTab==='login' ? '#fff':'transparent',
+      loginTabFg: s.authTab==='login' ? '#0d1a36':'#8a93a8',
+      loginTabSh: s.authTab==='login' ? '0 2px 8px rgba(13,26,54,.08)':'none',
+      regTabBg: s.authTab==='register' ? '#fff':'transparent',
+      regTabFg: s.authTab==='register' ? '#0d1a36':'#8a93a8',
+      regTabSh: s.authTab==='register' ? '0 2px 8px rgba(13,26,54,.08)':'none',
+      email: s.email, password: s.password,
+      setEmail:(e)=>this.setState({email:e.target.value}),
+      setPassword:(e)=>this.setState({password:e.target.value}),
+      showLogin:()=>this.setState({authTab:'login'}),
+      showRegister:()=>this.setState({authTab:'register'}),
+      toggleAuthTab:()=>this.setState({authTab: s.authTab==='login'?'register':'login'}),
+      doAuth:()=>this.setState({authed:true, screen:'dashboard'}),
+    };
+  }
+}
+</script>
+</body>
+</html>
