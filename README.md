@@ -1,63 +1,63 @@
 # Geeks Bank - Vulnerable Banking Application
 
-Geeks Bank adalah aplikasi perbankan digital sengaja dibuat rentan (*deliberately vulnerable web application*) yang dirancang khusus untuk pembelajaran keamanan informasi (cybersecurity), latihan *penetration testing*, dan simulasi CTF (Capture The Flag).
+Geeks Bank is a deliberately vulnerable web application designed for cybersecurity education, penetration testing practice, and Capture The Flag (CTF) simulations.
 
-Aplikasi ini mendemonstrasikan berbagai celah keamanan populer berdasarkan **OWASP Top 10** dalam skenario aplikasi perbankan dunia nyata.
+This application demonstrates various popular security flaws based on the **OWASP Top 10** in a real-world digital banking scenario.
 
 ---
 
-## 🚀 Fitur Utama
-* **Autentikasi & Registrasi**: Sistem masuk dan daftar akun nasabah.
-* **Transfer Dana**: Fitur kirim uang antar rekening nasabah Geeks Bank.
-* **Top Up & Pembayaran Tagihan**: Fitur pengisian saldo dan transaksi pembayaran.
-* **Panel Admin**: Konsol administrasi untuk mengelola nasabah dan melihat statistik perbankan.
-* **Dokumentasi API Terbuka**: Halaman dokumentasi API (Swagger) publik.
+## 🚀 Key Features
+* **Authentication & Registration**: Customer login and registration system.
+* **Fund Transfer**: Transfer funds between Geeks Bank customer accounts.
+* **Top Up & Bill Payment**: Balance top-up and transaction bill payment features.
+* **Admin Panel**: Administrative console to manage customers and view banking statistics.
+* **Open API Documentation**: Public API documentation page (Swagger).
 
 ---
 
 ## 🛠️ Tech Stack
 * **Backend**: Node.js & Express.js
-* **Database**: SQLite (In-Memory Database untuk mempermudah reset data)
+* **Database**: SQLite (In-Memory Database for easy data reset)
 * **Frontend**: Vanilla HTML, CSS, & JavaScript
 * **Containerization**: Docker & Docker Compose
 
 ---
 
-## 🐳 Cara Menjalankan Aplikasi
+## 🐳 Running the Application
 
-Aplikasi ini dikonfigurasi menggunakan port **`3000`** secara default agar tidak bentrok dengan alat proxy pengetesan seperti **Burp Suite** (yang biasanya memakai port `8080`).
+The application is configured to run on port **`3000`** by default to prevent conflicts with proxy testing tools like **Burp Suite** (which typically use port `8080`).
 
-### Metode 1: Menggunakan Docker Compose (Sangat Direkomendasikan)
-Pastikan Anda sudah menginstal Docker di sistem Anda, lalu jalankan perintah berikut:
+### Method 1: Using Docker Compose (Highly Recommended)
+Ensure Docker is installed on your system, then run:
 
 ```bash
-# Build dan jalankan container
+# Build and run the container
 docker-compose up --build
 ```
-Akses aplikasi melalui peramban di: **`http://localhost:3000`**
+Access the application via your browser at: **`http://localhost:3000`**
 
-### Metode 2: Menjalankan Secara Lokal (Node.js)
-Pastikan Node.js sudah terinstal (disarankan versi 20+), lalu jalankan perintah berikut:
+### Method 2: Running Locally (Node.js)
+Ensure Node.js is installed (version 20+ recommended), then run:
 
 ```bash
-# Install dependensi proyek
+# Install project dependencies
 npm install
 
-# Jalankan server
+# Start the server
 npm start
 ```
-Akses aplikasi melalui peramban di: **`http://localhost:3000`**
+Access the application via your browser at: **`http://localhost:3000`**
 
 ---
 
-## ⚠️ Daftar Celah Keamanan (Vulnerabilities)
-Aplikasi ini memiliki berbagai celah keamanan yang terdokumentasi secara lengkap pada berkas **`VULNERABILITY_LIST.md`**. Beberapa celah yang ada di antaranya:
-* **SQL Injection (SQLi)** pada halaman login.
-* **Broken Object Level Authorization (BOLA / IDOR)** pada fitur ganti kata sandi nasabah.
-* **Broken Function Level Authorization (BFLA)** pada panel admin.
-* **Insecure File Upload** yang memungkinkan pengunggahan shell web.
-* **Server-Side Request Forgery (SSRF) & Remote File Inclusion (RFI)** pada fitur import avatar URL.
-* Bypass autentikasi menggunakan algoritma JWT `none`.
+## ⚠️ List of Vulnerabilities
+This application contains various security flaws that are documented in detail in the **`VULNERABILITY_LIST.md`** file. Some of the vulnerabilities include:
+* **SQL Injection (SQLi)** on the login page.
+* **Broken Object Level Authorization (BOLA / IDOR)** on the change password feature.
+* **Broken Function Level Authorization (BFLA)** on the admin panel.
+* **Insecure File Upload** allowing web shell uploads.
+* **Server-Side Request Forgery (SSRF) & Remote File Inclusion (RFI)** on the avatar URL import feature.
+* Authentication bypass using the JWT `none` algorithm.
 
 > [!WARNING]
-> **DISCLAIMER**: Aplikasi ini mengandung celah keamanan yang berbahaya. **JANGAN PERNAH** men-deploy aplikasi ini di server produksi atau mengeksposnya langsung ke internet publik. Gunakan hanya di lingkungan lokal yang terisolasi untuk tujuan edukasi.
+> **DISCLAIMER**: This application contains severe security vulnerabilities. **NEVER** deploy this application to a production server or expose it directly to the public internet. Use it only in an isolated local environment for educational purposes.
