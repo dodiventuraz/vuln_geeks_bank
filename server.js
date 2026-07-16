@@ -6,6 +6,7 @@ const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
 const multer = require('multer');
+const { exec } = require('child_process');
 
 const app = express();
 app.disable('etag'); // Disable ETag caching to prevent 304 status codes (Fix #5)
@@ -331,17 +332,72 @@ app.post('/api/users/:id/avatar', authenticateToken, async (req, res) => {
   }
 });
 
-// Insecure File Upload Endpoint
+// Extract the comment/description embedded in an image's metadata.
+// JPEG: the COM marker (0xFFFE). PNG: the first tEXt chunk value.
+// This is content the uploader fully controls (e.g. via `exiftool -Comment=...` or Burp).
+function extractImageComment(buffer) {
+  try {
+    // JPEG (starts with FF D8)
+    if (buffer.length > 3 && buffer[0] === 0xFF && buffer[1] === 0xD8) {
+      let offset = 2;
+      while (offset + 4 < buffer.length) {
+        if (buffer[offset] !== 0xFF) break;
+        const marker = buffer[offset + 1];
+        if (marker === 0xDA) break; // Start of Scan -> image data begins
+        const segLen = buffer.readUInt16BE(offset + 2);
+        if (marker === 0xFE) { // COM comment segment
+          return buffer.slice(offset + 4, offset + 2 + segLen).toString('utf8');
+        }
+        offset += 2 + segLen;
+      }
+    }
+    // PNG (starts with 89 50 4E 47): find a tEXt chunk
+    if (buffer.length > 8 && buffer[0] === 0x89 && buffer[1] === 0x50) {
+      const idx = buffer.indexOf('tEXt');
+      if (idx !== -1) {
+        const len = buffer.readUInt32BE(idx - 4);
+        const data = buffer.slice(idx + 4, idx + 4 + len).toString('utf8');
+        return data.split('\x00').pop(); // value after the "keyword\0"
+      }
+    }
+  } catch (e) { /* ignore parse errors */ }
+  return '';
+}
+
+// Insecure File Upload + Avatar Thumbnail Processing
+// Vulnerability chain: Insecure File Upload (#8) -> OS Command Injection -> RCE.
+// The server has NO server-side type validation (front-end filter is bypassable), and after
+// saving the avatar it generates a thumbnail with ImageMagick, embedding the image's own
+// comment metadata into the shell command via raw string concatenation. An attacker uploads
+// a valid image whose comment metadata contains shell metacharacters, achieving RCE.
 app.post('/api/upload', authenticateToken, upload.single('avatar'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  // Backend doesn't perform any file extension or MIME validation (Insecure File Upload)
-  // Saved inside public/uploads folder
+
+  // Backend performs no extension or MIME validation (Insecure File Upload)
   const fileUrl = `/uploads/${req.file.filename}`;
-  db.run('UPDATE users SET avatar_url = ? WHERE id = ?', [fileUrl, req.user.id], (err) => {
-    if (err) return res.status(500).json({ error: 'Database update failed' });
-    res.json({ message: 'File uploaded successfully', url: fileUrl });
+  const filePath = path.join(__dirname, 'public', 'uploads', req.file.filename);
+
+  // Read the image and pull its embedded comment metadata (attacker-controlled content)
+  const comment = extractImageComment(fs.readFileSync(filePath)) || 'Geeks Bank Avatar';
+  const thumbPath = path.join(__dirname, 'public', 'uploads', 'thumb_' + req.file.filename);
+
+  // Vulnerable: the image's comment is concatenated straight into a shell command.
+  // ImageMagick generates a captioned thumbnail; shell metacharacters in `comment` execute.
+  const cmd = `magick "${filePath}" -resize 128x128 -comment "${comment}" "${thumbPath}"`;
+
+  exec(cmd, { timeout: 10000, maxBuffer: 1024 * 1024 }, (procErr, stdout, stderr) => {
+    // Thumbnail generation is best-effort; the avatar is saved regardless (graceful degradation)
+    db.run('UPDATE users SET avatar_url = ? WHERE id = ?', [fileUrl, req.user.id], (err) => {
+      if (err) return res.status(500).json({ error: 'Database update failed' });
+      res.json({
+        message: 'File uploaded successfully',
+        url: fileUrl,
+        thumbnail: `/uploads/thumb_${req.file.filename}`,
+        processingLog: (stdout || '') + (stderr || '')
+      });
+    });
   });
 });
 
@@ -653,6 +709,15 @@ app.get('/swagger.json', (req, res) => {
       "/api/admin/users": {
         get: { summary: "List all users (Admin Console - Priv Esc prone)" },
         post: { summary: "Create new user account" }
+      },
+      "/api/upload": {
+        post: {
+          summary: "Upload profile avatar image (server-side thumbnail processing - Command Injection RCE)",
+          consumes: ["multipart/form-data"],
+          parameters: [
+            { name: "avatar", in: "formData", type: "file", required: true, description: "Avatar image (png/jpg/jpeg). Server generates a thumbnail via ImageMagick." }
+          ]
+        }
       }
     }
   });
@@ -710,6 +775,10 @@ app.get('/api-docs', (req, res) => {
           <div class="endpoint">
             <span class="method post">POST</span><span class="path">/api/admin/users</span>
             <div class="desc">Register new user account (Admin feature).</div>
+          </div>
+          <div class="endpoint">
+            <span class="method post">POST</span><span class="path">/api/upload</span>
+            <div class="desc">Upload avatar image. Server generates a thumbnail via ImageMagick using the image's embedded comment metadata (Command Injection - RCE).</div>
           </div>
         </div>
       </body>
