@@ -1,11 +1,14 @@
 services:
   web:
     build: .
+    container_name: vuln-geeks-bank
     ports:
       - "3000:3000"
     environment:
       - PORT=3000
       - JWT_SECRET=supersecret
     volumes:
+      # Bind-mount the source so you can edit locally (restart the container to apply changes).
       - .:/app
+      # Anonymous volume keeps the Alpine-built node_modules (native sqlite3 / etc.) inside the container.
       - /app/node_modules

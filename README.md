@@ -51,7 +51,7 @@ Access the application via your browser at: **`http://localhost:3000`**
 ---
 
 ## ⚠️ List of Vulnerabilities
-This application contains various security flaws that are documented in detail in the **`VULNERABILITY_LIST.md`** file. Some of the vulnerabilities include:
+This application contains various security flaws that are documented in detail in the **`vulnerability_list.md`** file. Some of the vulnerabilities include:
 * **SQL Injection (SQLi)** on the login page.
 * **Broken Object Level Authorization (BOLA / IDOR)** on the change password feature.
 * **Broken Function Level Authorization (BFLA)** on the admin panel.
